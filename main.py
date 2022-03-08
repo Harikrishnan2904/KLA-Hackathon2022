@@ -10,13 +10,13 @@ file1 = open("Milestone"+ms+".txt","w")
 def timeFunction(inputs, name):
     funcInput = inputs["FunctionInput"]
     t = inputs["ExecutionTime"]
-    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Entry\n")
-    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Executing TimeFunction ("+ funcInput+ ', '+ t+ ")\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing TimeFunction ("+ funcInput+ ', '+ t+ ")\n")
     time.sleep(int(t))
-    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Exit\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
 
 def flow(workflow,name,isSequential):
-    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Entry\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if isSequential:                            #SEQUENTIAL
         for k in workflow.keys():
             sname = name+'.'+k
@@ -44,7 +44,7 @@ def flow(workflow,name,isSequential):
             th.start()
         for th in threadList:
             th.join()
-    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Exit\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
 
 if __name__ == "__main__":
     yamlFile = open(f"Milestone"+ms[0]+"/Milestone"+ms+".yaml",'r')

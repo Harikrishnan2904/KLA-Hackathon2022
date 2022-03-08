@@ -1,16 +1,16 @@
-2022-03-08 11:32:43.672656; M1A_Workflow Entry
-2022-03-08 11:32:43.672656; M1A_Workflow.TaskA Entry
-2022-03-08 11:32:43.672656; M1A_Workflow.TaskA Executing TimeFunction (TaskA_Input, 1)
-2022-03-08 11:32:44.683514; M1A_Workflow.TaskA Exit
-2022-03-08 11:32:44.683514; M1A_Workflow.TaskB Entry
-2022-03-08 11:32:44.683514; M1A_Workflow.TaskB Executing TimeFunction (TaskB_Input, 2)
-2022-03-08 11:32:46.694959; M1A_Workflow.TaskB Exit
-2022-03-08 11:32:46.694959; M1A_Workflow.FlowA Entry
-2022-03-08 11:32:46.694959; M1A_Workflow.FlowA.TaskC Entry
-2022-03-08 11:32:46.694959; M1A_Workflow.FlowA.TaskC Executing TimeFunction (TaskC_Input, 3)
-2022-03-08 11:32:49.695836; M1A_Workflow.FlowA.TaskC Exit
-2022-03-08 11:32:49.695836; M1A_Workflow.FlowA.TaskD Entry
-2022-03-08 11:32:49.695836; M1A_Workflow.FlowA.TaskD Executing TimeFunction (TaskD_Input, 4)
-2022-03-08 11:32:53.706325; M1A_Workflow.FlowA.TaskD Exit
-2022-03-08 11:32:53.706325; M1A_Workflow.FlowA Exit
-2022-03-08 11:32:53.706325; M1A_Workflow Exit
+2022-03-08 11:49:27.346539;M1A_Workflow Entry
+2022-03-08 11:49:27.346539;M1A_Workflow.TaskA Entry
+2022-03-08 11:49:27.346539;M1A_Workflow.TaskA Executing TimeFunction (TaskA_Input, 1)
+2022-03-08 11:49:28.357170;M1A_Workflow.TaskA Exit
+2022-03-08 11:49:28.357170;M1A_Workflow.TaskB Entry
+2022-03-08 11:49:28.357170;M1A_Workflow.TaskB Executing TimeFunction (TaskB_Input, 2)
+2022-03-08 11:49:30.362425;M1A_Workflow.TaskB Exit
+2022-03-08 11:49:30.362425;M1A_Workflow.FlowA Entry
+2022-03-08 11:49:30.362425;M1A_Workflow.FlowA.TaskC Entry
+2022-03-08 11:49:30.362425;M1A_Workflow.FlowA.TaskC Executing TimeFunction (TaskC_Input, 3)
+2022-03-08 11:49:33.369347;M1A_Workflow.FlowA.TaskC Exit
+2022-03-08 11:49:33.369347;M1A_Workflow.FlowA.TaskD Entry
+2022-03-08 11:49:33.369347;M1A_Workflow.FlowA.TaskD Executing TimeFunction (TaskD_Input, 4)
+2022-03-08 11:49:37.369578;M1A_Workflow.FlowA.TaskD Exit
+2022-03-08 11:49:37.369578;M1A_Workflow.FlowA Exit
+2022-03-08 11:49:37.369578;M1A_Workflow Exit
