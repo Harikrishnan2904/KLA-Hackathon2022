@@ -1,21 +1,22 @@
 import time
 import yaml
 import threading
+import datetime
 
-file1 = open("Milestone1B.txt","w")
+ms = '1B'           #Milestone number
 
-currTime = ""
+file1 = open("Milestone"+ms+".txt","w")
 
 def timeFunction(inputs, name):
     funcInput = inputs["FunctionInput"]
     t = inputs["ExecutionTime"]
-    file1.write(currTime+ '; '+ name+ " Entry\n")
-    file1.write(currTime+ '; '+ name+ " Executing TimeFunction ("+ funcInput+ ', '+ t+ ")\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Entry\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Executing TimeFunction ("+ funcInput+ ', '+ t+ ")\n")
     time.sleep(int(t))
-    file1.write(currTime+ '; '+ name+ " Exit\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Exit\n")
 
 def flow(workflow,name,isSequential):
-    file1.write(currTime+ '; '+ name+ " Entry\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Entry\n")
     if isSequential:                            #SEQUENTIAL
         for k in workflow.keys():
             sname = name+'.'+k
@@ -43,12 +44,12 @@ def flow(workflow,name,isSequential):
             th.start()
         for th in threadList:
             th.join()
-    file1.write(currTime+ '; '+ name+ " Exit\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Exit\n")
 
 if __name__ == "__main__":
-    yamlFile = open(f"Milestone1/Milestone1B.yaml",'r')
+    yamlFile = open(f"Milestone"+ms[0]+"/Milestone"+ms+".yaml",'r')
     workflow = yaml.safe_load(yamlFile)
-    name = "M1B_Workflow"
+    name = "M"+ms+"_Workflow"
     if workflow[name]["Execution"] == "Sequential":
         flow(workflow[name]["Activities"],name,True)
     else:
@@ -58,7 +59,7 @@ file1.close()
 
 """
 def flow(workflow,name):
-    file1.write(currTime+ '; '+ name+ " Entry\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Entry\n")
     threadList = []
     for k in workflow.keys():
         sname = name+'.'+k
@@ -70,5 +71,5 @@ def flow(workflow,name):
         elif workflow[k]["Type"] == "Task":
             if workflow[k]["Function"] == "TimeFunction":
                 timeFunction(workflow[k]["Inputs"],sname)
-    file1.write(currTime+ '; '+ name+ " Exit\n")
+    file1.write(str(datetime.datetime.now())+ '; '+ name+ " Exit\n")
 """
