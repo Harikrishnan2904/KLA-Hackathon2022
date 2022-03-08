@@ -6,7 +6,7 @@ import pandas as pd
 
 outputs = {}
 
-ms = '2A'           #Milestone number
+ms = '2B'           #Milestone number
 
 file1 = open("Milestone"+ms+".txt","w")
 
@@ -35,7 +35,17 @@ def checkCondition(condition):
             return False
     else:
         return True
-    
+
+def binner(rule ,name, dataset, condition):
+    dataset = dataset[2:-11]
+    dataset = outputs[dataset][0]
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
+    if checkCondition(condition):
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing Binning ()\n")
+        
+    else:
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
 def dataLoad(inputs, name, condition):
     inputFile = inputs["Filename"]
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
@@ -50,6 +60,11 @@ def dataLoad(inputs, name, condition):
 def timeFunction(inputs, name, condition):
     #print(name, inputs, condition)
     funcInput = inputs["FunctionInput"]
+    if funcInput[0] == '$':
+        funcInput = funcInput[2:-13]
+        while funcInput not in outputs.keys():
+            continue
+        funcInput = str(outputs[funcInput][1])
     t = inputs["ExecutionTime"]
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
@@ -77,6 +92,8 @@ def flow(workflow,name,isSequential):
                     timeFunction(workflow[k]["Inputs"],sname, condition)
                 elif workflow[k]["Function"] == "DataLoad":
                     dataLoad(workflow[k]["Inputs"],sname, condition)
+                elif workflow[k]["Function"] == "Binning":
+                    binning()
     else:                                       #CONCURRENT
         threadList = []
         for k in workflow.keys():
