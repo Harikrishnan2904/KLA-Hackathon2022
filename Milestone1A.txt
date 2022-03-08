@@ -1,0 +1,16 @@
+; M1A_Workflow Entry
+; M1A_Workflow.TaskA Entry
+; M1A_Workflow.TaskA Executing TimeFunction (TaskA_Input, 1)
+; M1A_Workflow.TaskA Exit
+; M1A_Workflow.TaskB Entry
+; M1A_Workflow.TaskB Executing TimeFunction (TaskB_Input, 2)
+; M1A_Workflow.TaskB Exit
+; M1A_Workflow.FlowA Entry
+; M1A_Workflow.FlowA.TaskC Entry
+; M1A_Workflow.FlowA.TaskC Executing TimeFunction (TaskC_Input, 3)
+; M1A_Workflow.FlowA.TaskC Exit
+; M1A_Workflow.FlowA.TaskD Entry
+; M1A_Workflow.FlowA.TaskD Executing TimeFunction (TaskD_Input, 4)
+; M1A_Workflow.FlowA.TaskD Exit
+; M1A_Workflow.FlowA Exit
+; M1A_Workflow Exit
