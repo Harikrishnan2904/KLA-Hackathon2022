@@ -45,43 +45,54 @@ def export(outputFile, defectTable, name, condition):
         for i in range(1,len(defectTable)-1):
             dtable = dtable+'.'+defectTable[i]
         df = outputs[dtable][0]
-        df.to_csv(outputFile)
+        df.to_csv(outputFile,index=False)
     else:
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
+
 def merge(inputs, outs, name, condition):
-    print(name)
+    #print(name)
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing MergeResults ()\n")
         file2 = open("Milestone"+ms[0]+"/"+inputs["PrecedenceFile"],"r")
         precedence = file2.read()
         file2.close()
-        #print(precedence)
-        precedence.split(" >> ")
+        print(precedence)
+        precedence = precedence.split(" >> ")
+        #print(inputs["DataSet1"][2:-21])
+        while inputs["DataSet1"][2:-21] not in outputs.keys():
+            continue
+        #print("XX")
         bin = [-1 for i in range(outputs[inputs["DataSet1"][2:-21]][1])]
         i = len(precedence)-1
         while i>=0:
-            curr = outputs[inputs["DataSet1"][2:-24]+precedence[i]][0]["Bincode"]
-            for j in len(curr):
+            print(inputs["DataSet1"][2:-24]+precedence[i],precedence[i])
+            while inputs["DataSet1"][2:-24]+precedence[i] not in outputs.keys():
+                continue
+            curr = list(outputs[inputs["DataSet1"][2:-24]+precedence[i]][0]["Bincode"])
+            #print(curr)
+            for j in range(len(curr)):
                 if curr[j]!=-1:
                     bin[j] = curr[j]
             i-=1
-        output = outputs[inputs["DataSet1"][2:-21]]
+        output = outputs[inputs["DataSet1"][2:-21]][0].copy()
+        #print(type(outputs[inputs["DataSet1"][2:-21]]),type(output),bin)
         output["Bincode"] = bin
-        print(name)
+        #print(name)
         outputs[name] = [output,output.shape[0]]
     else:
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
 
 def binning(inputs, name, condition):
+    #print(name)
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing Binning ()\n")
         dataset = inputs["DataSet"]
         dataset = dataset[2:-11]
-        dataset = outputs[dataset][0]
+        dataset = outputs[dataset][0].copy()
         rule = pd.read_csv("Milestone"+ms[0]+"/"+inputs["RuleFilename"])
         binID, rule = rule["BIN_ID"][0], rule["RULE"][0]
         rule = rule.split(' ')
@@ -165,7 +176,7 @@ def flow(workflow,name,isSequential):
                 elif workflow[k]["Function"] == "MergeResults":
                     merge(workflow[k]["Inputs"] , workflow[k]["Outputs"],sname, condition) 
                 elif workflow[k]["Function"] == "ExportResults":
-                    export(workflow[k]["FileName"],workflow[k]["DefectTable"],sname,condition)
+                    export(workflow[k]["Inputs"]["FileName"],workflow[k]["Inputs"]["DefectTable"],sname,condition)
     else:
         print("concurrent", name)                                       #CONCURRENT
         threadList = []
