@@ -26,7 +26,7 @@ M3A_Workflow :
             Function : "Binning"
             Condition: "$(M3A_Workflow.LoadData.NoOfDefects) > 0"
             Inputs : { 
-                RuleFilename: "Milestone3A_BinningRule_500.csv", 
+                RuleFilename: "Milestone3A_BinningRule_500.csv",
                 DataSet : "$(M3A_Workflow.LoadData.DataTable)"
             }
             Outputs : [ BinningResultsTable, NoOfDefects ]

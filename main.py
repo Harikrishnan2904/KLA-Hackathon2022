@@ -6,7 +6,7 @@ import pandas as pd
 
 outputs = {}
 
-ms = '2B'           #Milestone number
+ms = '3A'           #Milestone number
 
 file1 = open("Milestone"+ms+".txt","w")
 
@@ -36,20 +36,87 @@ def checkCondition(condition):
     else:
         return True
 
-def binner(rule ,name, dataset, condition):
-    dataset = dataset[2:-11]
-    dataset = outputs[dataset][0]
+def export(outputFile, defectTable, name, condition):
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
-        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing Binning ()\n")
-        
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing ExportResults ()\n")
+        defectTable = defectTable.split('.')
+        dtable = defectTable[0][2:]
+        for i in range(1,len(defectTable)-1):
+            dtable = dtable+'.'+defectTable[i]
+        df = outputs[dtable][0]
+        df.to_csv(outputFile)
     else:
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
-def dataLoad(inputs, name, condition):
-    inputFile = inputs["Filename"]
+def merge(inputs, outs, name, condition):
+    print(name)
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing MergeResults ()\n")
+        file2 = open("Milestone"+ms[0]+"/"+inputs["PrecedenceFile"],"r")
+        precedence = file2.read()
+        file2.close()
+        #print(precedence)
+        precedence.split(" >> ")
+        bin = [-1 for i in range(outputs[inputs["DataSet1"][2:-21]][1])]
+        i = len(precedence)-1
+        while i>=0:
+            curr = outputs[inputs["DataSet1"][2:-24]+precedence[i]][0]["Bincode"]
+            for j in len(curr):
+                if curr[j]!=-1:
+                    bin[j] = curr[j]
+            i-=1
+        output = outputs[inputs["DataSet1"][2:-21]]
+        output["Bincode"] = bin
+        print(name)
+        outputs[name] = [output,output.shape[0]]
+    else:
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
+
+def binning(inputs, name, condition):
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
+    if checkCondition(condition):
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing Binning ()\n")
+        dataset = inputs["DataSet"]
+        dataset = dataset[2:-11]
+        dataset = outputs[dataset][0]
+        rule = pd.read_csv("Milestone"+ms[0]+"/"+inputs["RuleFilename"])
+        binID, rule = rule["BIN_ID"][0], rule["RULE"][0]
+        rule = rule.split(' ')
+        con = []
+        val = []
+        if len(rule)==3:
+            con.append(rule[1])
+            val.append(int(rule[2]))
+        else:
+            con.append(rule[1])
+            val.append(int(rule[2]))
+            con.append(rule[5])
+            val.append(int(rule[6]))
+        bin = []
+        for i in dataset["Signal"]:
+            check = True
+            for j in range(len(con)):
+                if not ((con[j]=='>' and i>val[j]) or (con[j]=='<' and i<val[j])):
+                    check = False
+            if check:
+                bin.append(binID)
+            else:
+                bin.append(-1)
+        dataset["Bincode"] = bin
+        outputs[name] = [dataset,dataset.shape[0]]
+        #print(dataset)
+
+    else:
+        file1.write(str(datetime.datetime.now())+ ';'+ name+ " Skipped\n")
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Exit\n")
+
+def dataLoad(inputs, name, condition):
+    file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
+    if checkCondition(condition):
+        inputFile = inputs["Filename"]
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing DataLoad ("+ inputFile+")\n")    
         df = pd.read_csv("Milestone"+ms[0]+"/"+inputFile)
         outputs[name] = [df,df.shape[0]]
@@ -59,15 +126,15 @@ def dataLoad(inputs, name, condition):
 
 def timeFunction(inputs, name, condition):
     #print(name, inputs, condition)
-    funcInput = inputs["FunctionInput"]
-    if funcInput[0] == '$':
-        funcInput = funcInput[2:-13]
-        while funcInput not in outputs.keys():
-            continue
-        funcInput = str(outputs[funcInput][1])
-    t = inputs["ExecutionTime"]
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if checkCondition(condition):
+        funcInput = inputs["FunctionInput"]
+        if funcInput[0] == '$':
+            funcInput = funcInput[2:-13]
+            while funcInput not in outputs.keys():
+                continue
+            funcInput = str(outputs[funcInput][1])
+        t = inputs["ExecutionTime"]
         file1.write(str(datetime.datetime.now())+ ';'+ name+ " Executing TimeFunction ("+ funcInput+ ', '+ t+ ")\n")
         time.sleep(int(t))
     else:
@@ -77,6 +144,7 @@ def timeFunction(inputs, name, condition):
 def flow(workflow,name,isSequential):
     file1.write(str(datetime.datetime.now())+ ';'+ name+ " Entry\n")
     if isSequential:                            #SEQUENTIAL
+        print("sequential", name)
         for k in workflow.keys():
             sname = name+'.'+k
             if workflow[k]["Type"] == "Flow":
@@ -93,8 +161,13 @@ def flow(workflow,name,isSequential):
                 elif workflow[k]["Function"] == "DataLoad":
                     dataLoad(workflow[k]["Inputs"],sname, condition)
                 elif workflow[k]["Function"] == "Binning":
-                    binning()
-    else:                                       #CONCURRENT
+                    binning(workflow[k]["Inputs"] ,sname, condition) 
+                elif workflow[k]["Function"] == "MergeResults":
+                    merge(workflow[k]["Inputs"] , workflow[k]["Outputs"],sname, condition) 
+                elif workflow[k]["Function"] == "ExportResults":
+                    export(workflow[k]["FileName"],workflow[k]["DefectTable"],sname,condition)
+    else:
+        print("concurrent", name)                                       #CONCURRENT
         threadList = []
         for k in workflow.keys():
             sname = name+'.'+k
@@ -111,6 +184,12 @@ def flow(workflow,name,isSequential):
                     threadList.append(threading.Thread(target=timeFunction,args=(workflow[k]["Inputs"],sname,condition)))
                 elif workflow[k]["Function"] == "DataLoad":
                     threadList.append(threading.Thread(target=dataLoad,args=(workflow[k]["Inputs"],sname,condition)))
+                elif workflow[k]["Function"] == "Binning":
+                    threadList.append(threading.Thread(target=binning,args=(workflow[k]["Inputs"] ,sname, condition)))
+                elif workflow[k]["Function"] == "MergeResults":
+                    threadList.append(threading.Thread(target=merge,args=(workflow[k]["Inputs"] ,workflow[k]["Outputs"], sname, condition)))
+                elif workflow[k]["Function"] == "ExportResults":
+                    threadList.append(threading.Thread(target=export,args=(workflow[k]["FileName"],workflow[k]["DefectTable"],sname,condition)))
         for th in threadList:
             th.start()
         for th in threadList:
